@@ -16,7 +16,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.GenericContainer;
 
+import java.util.Arrays;
 import java.util.Collections;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataMongoTest
@@ -40,7 +43,7 @@ public class MongoApplicationTests {
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
             TestPropertyValues values = TestPropertyValues.of(
                     "spring.data.mongodb.host=" + mongo.getContainerIpAddress(),
-                    "spring.data.mongodb.port=" + mongo.getMappedPort(6379)
+                    "spring.data.mongodb.port=" + mongo.getMappedPort(27017)
             );
             values.applyTo(configurableApplicationContext);
         }
@@ -51,7 +54,8 @@ public class MongoApplicationTests {
 
     @Test
     public void should_insertData() {
-        serviceBulk.insertBulk(Collections.emptyList());
+        serviceBulk.insertBulk(Arrays.asList(new User("0")));
+        assertThat(serviceBulk.count()).isEqualTo(1);
     }
 
 }
